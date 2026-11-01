@@ -1,37 +1,37 @@
 name: Build EDITH MARK 5 APK
-on: [push]
+on:
+  push:
+    branches: [ main ]
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Python 3.10
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          
-      - name: Setup Java 17
-        uses: actions/setup-java@v5
+      - uses: actions/setup-java@v5
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
-
-      - name: Install dependencies
+      - name: Install system deps
         run: |
           sudo apt update
-          sudo apt install -y python3-pip zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev cmake libffi-dev libssl-dev libltdl-dev
-          pip install --upgrade pip
-          pip install --upgrade Cython==0.29.33
-          pip install buildozer==1.5.0
-          pip install virtualenv
-
-      - name: Build APK
+          sudo apt install -y zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev cmake libffi-dev libssl-dev
+      - name: Install Python deps
         run: |
-          buildozer android debug
-
+          pip install --upgrade pip
+          pip install Cython==0.29.33 --force-reinstall
+          pip install buildozer==1.5.0
+      - name: Accept licenses
+        run: |
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+      - name: Build APK
+        run: buildozer android debug
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: edith-mark5-apk
+          name: edith-apk
           path: bin/*.apk
