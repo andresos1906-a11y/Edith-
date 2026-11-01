@@ -28,3 +28,4 @@ jobs:
         with:
           name: EDITH-MARK-5-APK
           path: bin/*.apk
+          
